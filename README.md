@@ -8,7 +8,19 @@ No accounts, subscriptions or settings screen.
 
 ## Install
 
-You'll need a Mac with Touch ID (or Apple Watch unlock, or just your login password) and Xcode or the Command Line Tools.
+Works on macOS 14 or later, on Apple Silicon and Intel Macs. Touch ID is nice; your login password works too.
+
+1. Download **Lockbox.zip** from the [latest release](https://github.com/paul-bokelman/lockbox/releases/latest) and unzip it.
+2. Drag **Lockbox** into Applications.
+3. Open it once. macOS will say it can't check it for malware. Click **Done**, then go to **System Settings → Privacy & Security** and click **Open Anyway**.
+
+That last step exists because Lockbox isn't notarized, which costs $99 a year. You only do it once, and the source is all here if you'd rather check before you trust it.
+
+Opening it once is also how Finder learns about it. After that you never need to open it again.
+
+### Or build it yourself
+
+With Xcode or the Command Line Tools installed:
 
 ```sh
 git clone https://github.com/paul-bokelman/lockbox.git
@@ -16,7 +28,7 @@ cd lockbox
 ./build.sh install
 ```
 
-That builds `Lockbox.app`, puts it in `~/Applications`, and tells Finder about it.
+Apps you build yourself skip the Gatekeeper step.
 
 ## Use
 

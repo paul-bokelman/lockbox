@@ -1,6 +1,7 @@
 #!/bin/bash
-# Builds Lockbox.app into build/. `./build.sh install` also installs it to ~/Applications
-# and registers it with Finder (the .lockbox file type and the "Encrypt with Lockbox" menu item).
+# Builds a universal Lockbox.app into build/.
+#   ./build.sh install   also installs it to ~/Applications and registers it with Finder
+#   ./build.sh release   also zips it as build/Lockbox.zip for a GitHub release
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -8,7 +9,10 @@ APP=build/Lockbox.app
 rm -rf build
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" build/tmp
 
-swiftc -O -swift-version 5 -target "$(uname -m)-apple-macos14" Sources/*.swift -o "$APP/Contents/MacOS/Lockbox"
+for arch in arm64 x86_64; do
+  swiftc -O -swift-version 5 -target "$arch-apple-macos14" Sources/*.swift -o "build/tmp/Lockbox-$arch"
+done
+lipo -create build/tmp/Lockbox-arm64 build/tmp/Lockbox-x86_64 -output "$APP/Contents/MacOS/Lockbox"
 cp Info.plist "$APP/Contents/"
 
 swiftc -O tools/make-icon.swift -o build/tmp/make-icon
@@ -31,4 +35,9 @@ if [[ "${1:-}" == "install" ]]; then
   "$LSREGISTER" -f ~/Applications/Lockbox.app
   /System/Library/CoreServices/pbs -update
   echo "Installed ~/Applications/Lockbox.app"
+fi
+
+if [[ "${1:-}" == "release" ]]; then
+  ditto -c -k --keepParent "$APP" build/Lockbox.zip
+  echo "Packaged build/Lockbox.zip"
 fi
